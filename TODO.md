@@ -2,7 +2,7 @@
 
 ## Phase 1: Core Engine
 - [x] **Scene Database System** — `SceneDB` sheet + `modData` VBA module with scene lookup (SceneID, story text, choices, next scene links, conditions, on-enter effects)
-- [ ] **Game State Manager** — `modState` VBA module with stat/flag get/set, save/load to hidden sheet, auto-logging of actions for replay/debug
+- [x] **Game State Manager** — `modState` VBA module with stat/flag get/set, save/load to hidden sheet, auto-logging of actions for replay/debug
 - [ ] **Choice Resolver** — `modEngine` VBA module with `LoadScene`, `ApplyEffects`, `ResolveChoice`; button-based choices, condition validation, effect application
 
 ## Phase 2: UI/UX
@@ -43,7 +43,7 @@
 ## VBA Module Architecture
 ```
 modEngine  — LoadScene, ApplyEffects, ResolveChoice
-modState   — Get/Set stats, flags, inventory
+modState   — Get/Set stats, flags, inventory  ✅
 modUI      — RenderScene, RenderChoices, HUD updates
 modData    — Story lookup, validation, random tables  ✅
 frmSaveLoad — Optional save/load UI
