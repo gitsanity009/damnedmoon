@@ -301,3 +301,43 @@ Public Sub DevSetFlag(flagName As String, val As Boolean)
     modState.SetFlag flagName, val
     Debug.Print "Set " & flagName & " = " & CStr(val)
 End Sub
+
+' Enter the world map / free-roam mode (dev shortcut)
+Public Sub DevWorldMap()
+    EnsureInitialized
+    modMap.EnterWorldMap
+End Sub
+
+' Travel to a specific node (dev shortcut)
+Public Sub DevTravelTo(nodeID As String)
+    EnsureInitialized
+    modMap.TravelTo nodeID
+End Sub
+
+' Show available jobs at current location (dev shortcut)
+Public Sub DevShowJobs()
+    EnsureInitialized
+    Dim loc As String
+    loc = modState.GetCurrentLocation()
+    Dim jobs As Collection
+    Set jobs = modJobs.GetAvailableJobs(loc)
+    Debug.Print "=== JOBS AT " & loc & " ==="
+    Dim i As Long
+    For i = 1 To jobs.Count
+        Debug.Print "  " & CStr(jobs(i)) & " - " & modJobs.GetJobName(CStr(jobs(i)))
+    Next i
+    If jobs.Count = 0 Then Debug.Print "  (none)"
+    Debug.Print "========================="
+End Sub
+
+' Print time state (dev shortcut)
+Public Sub DevPrintTime()
+    Debug.Print "=== TIME STATE ==="
+    Debug.Print "Day:      " & modState.GetCurrentDay()
+    Debug.Print "Time:     " & modState.GetTimeOfDay()
+    Debug.Print "Moon:     " & modState.GetMoonPhase()
+    Debug.Print "Dark:     " & modTime.IsCurrentlyDark()
+    Debug.Print "Danger x: " & modTime.GetTimeDangerMultiplier()
+    Debug.Print "Summary:  " & modTime.GetTimeSummary()
+    Debug.Print "==================="
+End Sub

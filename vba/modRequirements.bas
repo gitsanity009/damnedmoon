@@ -15,6 +15,8 @@ Attribute VB_Name = "modRequirements"
 '   !ITEM:ITM_SILVER_KNIFE   — player does NOT have item
 '   TIME:NIGHT               — current time of day matches
 '   MOON:FULL                — moon phase contains keyword
+'   LOCATION:NODE_ID         — player is at a specific map node
+'   MONEY:50                 — player has >= N money
 '===============================================================
 
 Option Explicit
@@ -108,6 +110,12 @@ Private Function CheckSingleRequirement(req As String) As Boolean
 
     ElseIf modUtils.StartsWith(token, "MOON:") Then
         result = EvalMoonReq(modUtils.StripPrefix(token, "MOON:"))
+
+    ElseIf modUtils.StartsWith(token, "LOCATION:") Then
+        result = EvalLocationReq(modUtils.StripPrefix(token, "LOCATION:"))
+
+    ElseIf modUtils.StartsWith(token, "MONEY:") Then
+        result = EvalMoneyReq(modUtils.StripPrefix(token, "MONEY:"))
 
     Else
         ' Unknown requirement type — treat as met (permissive)
@@ -228,6 +236,32 @@ Private Function EvalMoonReq(moonVal As String) As Boolean
 End Function
 
 '===============================================================
+' LOCATION REQUIREMENT: LOCATION:NODE_ID
+'===============================================================
+Private Function EvalLocationReq(locID As String) As Boolean
+    EvalLocationReq = (UCase(modState.GetCurrentLocation()) = UCase(locID))
+End Function
+
+'===============================================================
+' MONEY REQUIREMENT: MONEY:50
+'===============================================================
+Private Function EvalMoneyReq(expr As String) As Boolean
+    ' Supports comparison operators: MONEY:>=50, MONEY:50 (treated as >=)
+    Dim opPos As Long
+    opPos = modUtils.FindComparisonPos(expr)
+
+    If opPos > 0 Then
+        ' Has operator — delegate to stat-style eval
+        EvalMoneyReq = EvalStatReq("MONEY" & expr)
+    Else
+        ' Bare number = must have >= that amount
+        Dim needed As Long
+        needed = modUtils.SafeLng(expr, 0)
+        EvalMoneyReq = (modState.GetStat(modConfig.STAT_MONEY) >= needed)
+    End If
+End Function
+
+'===============================================================
 ' DESCRIBE — Human-readable requirement description
 '===============================================================
 Private Function DescribeRequirement(req As String) As String
@@ -266,6 +300,18 @@ Private Function DescribeRequirement(req As String) As String
 
     ElseIf modUtils.StartsWith(token, "MOON:") Then
         DescribeRequirement = "[Requires moon: " & modUtils.StripPrefix(token, "MOON:") & "]"
+
+    ElseIf modUtils.StartsWith(token, "LOCATION:") Then
+        Dim lid As String
+        lid = modUtils.StripPrefix(token, "LOCATION:")
+        If negated Then
+            DescribeRequirement = "[Cannot be at: " & lid & "]"
+        Else
+            DescribeRequirement = "[Must be at: " & lid & "]"
+        End If
+
+    ElseIf modUtils.StartsWith(token, "MONEY:") Then
+        DescribeRequirement = "[Requires $" & modUtils.StripPrefix(token, "MONEY:") & "]"
 
     Else
         DescribeRequirement = "[Locked]"
