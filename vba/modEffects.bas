@@ -26,6 +26,9 @@ Attribute VB_Name = "modEffects"
 '   WORLD_MAP                 — enter free-roam map mode
 '   DO_JOB:JOB_ID             — execute a job
 '   MONEY:50                  — add/subtract money
+'   COMBAT:ENEMY_ID            — initiate combat with enemy
+'   JOURNAL:TYPE:text           — add a journal entry
+'   JOURNAL_QUEST:QID:text      — add a quest journal entry
 '===============================================================
 
 Option Explicit
@@ -131,6 +134,39 @@ Private Sub ProcessSingleEffect(ef As String)
         Dim moneyStr As String
         moneyStr = modUtils.StripPrefix(ef, "MONEY:")
         modState.AddStat modConfig.STAT_MONEY, modUtils.SafeLng(moneyStr, 0)
+
+    ElseIf modUtils.StartsWith(ef, "COMBAT:") Then
+        Dim combatEnemy As String
+        combatEnemy = modUtils.StripPrefix(ef, "COMBAT:")
+        Dim combatResult As String
+        combatResult = modCombat.QuickCombat(combatEnemy)
+        ' Log combat to journal
+        modJournal.AddCombatEntry "Fought " & modCombat.GetEnemyDisplayName(combatEnemy) & " — " & combatResult
+        ' Defeat redirects to a death/recovery scene
+        If combatResult = modCombat.RESULT_DEFEAT Then
+            mPendingJump = "SCN_DEFEAT"
+            modUtils.DebugLog "modEffects: combat defeat, queued SCN_DEFEAT"
+        End If
+
+    ElseIf modUtils.StartsWith(ef, "JOURNAL_QUEST:") Then
+        Dim jqBody As String
+        jqBody = modUtils.StripPrefix(ef, "JOURNAL_QUEST:")
+        Dim jqSep As Long
+        jqSep = InStr(jqBody, ":")
+        If jqSep > 0 Then
+            modJournal.AddQuestEntry Left(jqBody, jqSep - 1), Mid(jqBody, jqSep + 1)
+        End If
+
+    ElseIf modUtils.StartsWith(ef, "JOURNAL:") Then
+        Dim jBody As String
+        jBody = modUtils.StripPrefix(ef, "JOURNAL:")
+        Dim jSep As Long
+        jSep = InStr(jBody, ":")
+        If jSep > 0 Then
+            modJournal.AddEntry Mid(jBody, jSep + 1), Left(jBody, jSep - 1)
+        Else
+            modJournal.AddEntry jBody, modJournal.JTYPE_SYSTEM
+        End If
 
     Else
         modUtils.DebugLog "modEffects: unknown effect '" & ef & "', skipping"

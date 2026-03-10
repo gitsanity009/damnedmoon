@@ -26,6 +26,8 @@ Public Sub StartNewGame()
 
     ' Reset all state
     modState.ResetGameState
+    modJournal.ClearJournal
+    modSave.ClearUndoStack
 
     ' Get starting scene from config (or use default)
     Dim startScene As String
@@ -241,6 +243,70 @@ Private Sub ValidateCriticalSheets()
             modUtils.DebugLog "  verified sheet: " & CStr(criticalSheets(i))
         End If
     Next i
+End Sub
+
+'===============================================================
+' SAVE / LOAD — Player-facing entry points
+'===============================================================
+
+' Save to a player-chosen slot (1-3)
+Public Sub SaveToSlot(slotNum As Long)
+    EnsureInitialized
+    If modSave.SaveGame(slotNum) Then
+        MsgBox "Game saved to Slot " & slotNum & ".", vbInformation, "SAVE"
+    Else
+        MsgBox "Save failed.", vbExclamation, "SAVE"
+    End If
+End Sub
+
+' Load from a player-chosen slot (1-3)
+Public Sub LoadFromSlot(slotNum As Long)
+    EnsureInitialized
+    If modSave.LoadGame(slotNum) Then
+        modUtils.DebugLog "modBootstrap.LoadFromSlot: loaded slot " & slotNum
+    Else
+        MsgBox "No save in Slot " & slotNum & ".", vbExclamation, "LOAD"
+    End If
+End Sub
+
+' Undo last choice (rewind)
+Public Sub UndoLastChoice()
+    EnsureInitialized
+    If modSave.GetUndoDepth() = 0 Then
+        MsgBox "Nothing to undo.", vbInformation, "UNDO"
+        Exit Sub
+    End If
+    If modSave.PopSnapshot() Then
+        modUtils.DebugLog "modBootstrap.UndoLastChoice: rewound"
+    Else
+        MsgBox "Undo failed.", vbExclamation, "UNDO"
+    End If
+End Sub
+
+' Quick-save (slot 1)
+Public Sub QuickSave()
+    EnsureInitialized
+    modSave.SaveGame 1
+End Sub
+
+' Quick-load (slot 1)
+Public Sub QuickLoad()
+    EnsureInitialized
+    modSave.LoadGame 1
+End Sub
+
+' Show save slot info
+Public Sub ShowSaveSlots()
+    EnsureInitialized
+    Dim info As String
+    Dim i As Long
+    For i = 1 To modConfig.SAVE_SLOT_COUNT
+        Dim slotInfo As String
+        slotInfo = modSave.GetSlotInfo(i)
+        If Len(slotInfo) = 0 Then slotInfo = "Slot " & i & ": (empty)"
+        info = info & slotInfo & vbLf
+    Next i
+    MsgBox info, vbInformation, "SAVE SLOTS"
 End Sub
 
 '===============================================================
