@@ -20,6 +20,12 @@ Attribute VB_Name = "modEffects"
 '   TIME_ADVANCE:60           — advance time by N minutes
 '   DAY_ADVANCE:1             — advance day by N
 '   SCENE_JUMP:SCN_BLACKOUT   — force jump to another scene
+'   TRAVEL:NODE_ID            — travel to a map node
+'   REST:240                  — rest for N minutes (heals, passes time)
+'   WAIT_UNTIL:NIGHT          — wait until a time slot
+'   WORLD_MAP                 — enter free-roam map mode
+'   DO_JOB:JOB_ID             — execute a job
+'   MONEY:50                  — add/subtract money
 '===============================================================
 
 Option Explicit
@@ -101,6 +107,30 @@ Private Sub ProcessSingleEffect(ef As String)
     ElseIf modUtils.StartsWith(ef, "SCENE_JUMP:") Then
         mPendingJump = modUtils.StripPrefix(ef, "SCENE_JUMP:")
         modUtils.DebugLog "modEffects: queued scene jump to " & mPendingJump
+
+    ElseIf modUtils.StartsWith(ef, "TRAVEL:") Then
+        Dim destNode As String
+        destNode = modUtils.StripPrefix(ef, "TRAVEL:")
+        modMap.TravelTo destNode
+
+    ElseIf modUtils.StartsWith(ef, "REST:") Then
+        Dim restMin As Long
+        restMin = modUtils.SafeLng(modUtils.StripPrefix(ef, "REST:"), modTime.TIME_COST_REST)
+        modTime.Rest restMin
+
+    ElseIf modUtils.StartsWith(ef, "WAIT_UNTIL:") Then
+        modTime.WaitUntil modUtils.StripPrefix(ef, "WAIT_UNTIL:")
+
+    ElseIf modUtils.StartsWith(ef, "WORLD_MAP") Then
+        modMap.EnterWorldMap
+
+    ElseIf modUtils.StartsWith(ef, "DO_JOB:") Then
+        modJobs.DoJob modUtils.StripPrefix(ef, "DO_JOB:")
+
+    ElseIf modUtils.StartsWith(ef, "MONEY:") Then
+        Dim moneyStr As String
+        moneyStr = modUtils.StripPrefix(ef, "MONEY:")
+        modState.AddStat modConfig.STAT_MONEY, modUtils.SafeLng(moneyStr, 0)
 
     Else
         modUtils.DebugLog "modEffects: unknown effect '" & ef & "', skipping"
