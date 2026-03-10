@@ -30,6 +30,9 @@ Public Const SH_NPCS As String = "tbl_NPCs"
 Public Const SH_ENCOUNTERS As String = "tbl_Encounters"
 Public Const SH_JOURNAL As String = "tbl_JournalEntries"
 Public Const SH_ENDINGS As String = "tbl_Endings"
+Public Const SH_ABILITIES As String = "tbl_Abilities"
+Public Const SH_REPEVENTS As String = "tbl_RepEvents"
+Public Const SH_NIGHTCYCLE As String = "tbl_NightCycle"
 
 ' ── TABLE NAMES (ListObject names inside sheets) ──
 Public Const TBL_SCENES As String = "tbl_Scenes"
@@ -49,6 +52,9 @@ Public Const TBL_NPCS As String = "tbl_NPCs"
 Public Const TBL_ENCOUNTERS As String = "tbl_Encounters"
 Public Const TBL_JOURNAL As String = "tbl_JournalEntries"
 Public Const TBL_ENDINGS As String = "tbl_Endings"
+Public Const TBL_ABILITIES As String = "tbl_Abilities"
+Public Const TBL_REPEVENTS As String = "tbl_RepEvents"
+Public Const TBL_NIGHTCYCLE As String = "tbl_NightCycle"
 
 ' ── GAME SHEET LAYOUT CELLS ──
 Public Const NARRATIVE_CELL As String = "B6"
