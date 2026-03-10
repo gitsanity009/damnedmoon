@@ -105,6 +105,23 @@ Public Sub LoadScene(sceneID As String)
     ' Check for quest progression
     CheckQuestProgress sceneID
 
+    ' Check for scene-triggered combat (column AC)
+    Dim combatEnemy As String
+    combatEnemy = modUtils.SafeStr(wsScenes.Cells(sceneRow, modConfig.SCN_COL_COMBAT).Value)
+    If Len(combatEnemy) > 0 Then
+        Dim combatResult As String
+        combatResult = modCombat.QuickCombat(combatEnemy)
+        modJournal.AddCombatEntry "Fought " & modCombat.GetEnemyDisplayName(combatEnemy) & " — " & combatResult
+        If combatResult = modCombat.RESULT_DEFEAT Then
+            Application.ScreenUpdating = True
+            LoadScene "SCN_DEFEAT"
+            Exit Sub
+        End If
+    End If
+
+    ' Auto-save on scene load
+    modSave.AutoSave
+
     modUtils.DebugLog "modSceneEngine.LoadScene: loaded " & sceneID
     Application.ScreenUpdating = True
 End Sub
@@ -147,6 +164,9 @@ Public Sub ProcessChoice(choiceNum As Long)
     End If
 
     Application.ScreenUpdating = False
+
+    ' Push undo snapshot before applying choice
+    modSave.PushSnapshot
 
     ' Process choice effects (column baseCol + 3)
     Dim effectStr As String
