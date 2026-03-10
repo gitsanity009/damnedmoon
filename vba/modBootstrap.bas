@@ -37,9 +37,7 @@ Public Sub StartNewGame()
     modState.SetCurrentLocation startLocation
 
     ' Load the first scene
-    ' NOTE: LoadScene lives in modSceneEngine (Phase 2)
-    ' For now, set the scene ID directly
-    modState.SetCurrentScene startScene
+    modSceneEngine.LoadScene startScene
 
     Application.ScreenUpdating = True
 
@@ -67,8 +65,8 @@ Public Sub ContinueGame()
         Exit Sub
     End If
 
-    ' Scene is already set, just reload it
-    ' NOTE: LoadScene lives in modSceneEngine (Phase 2)
+    ' Reload the current scene
+    modSceneEngine.LoadScene currentScene
     modUtils.DebugLog "modBootstrap.ContinueGame: resuming at " & currentScene
 
     Application.ScreenUpdating = True
@@ -189,28 +187,27 @@ End Sub
 '===============================================================
 Public Sub ChoiceClicked_1()
     EnsureInitialized
-    ' NOTE: ProcessChoice lives in modSceneEngine (Phase 2)
-    ' ProcessChoice 1
+    modSceneEngine.ProcessChoice 1
 End Sub
 
 Public Sub ChoiceClicked_2()
     EnsureInitialized
-    ' ProcessChoice 2
+    modSceneEngine.ProcessChoice 2
 End Sub
 
 Public Sub ChoiceClicked_3()
     EnsureInitialized
-    ' ProcessChoice 3
+    modSceneEngine.ProcessChoice 3
 End Sub
 
 Public Sub ChoiceClicked_4()
     EnsureInitialized
-    ' ProcessChoice 4
+    modSceneEngine.ProcessChoice 4
 End Sub
 
 Public Sub ChoiceClicked_5()
     EnsureInitialized
-    ' ProcessChoice 5
+    modSceneEngine.ProcessChoice 5
 End Sub
 
 '===============================================================
@@ -257,8 +254,7 @@ Public Sub DevJumpToScene(sceneID As String)
         MsgBox "Scene '" & sceneID & "' not found.", vbExclamation, "DEV"
         Exit Sub
     End If
-    modState.SetCurrentScene sceneID
-    ' NOTE: LoadScene call will be added when modSceneEngine exists
+    modSceneEngine.LoadScene sceneID
     modUtils.DebugLog "modBootstrap.DevJumpToScene: " & sceneID
 End Sub
 
