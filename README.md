@@ -1,10 +1,10 @@
-# Blood Moon Protocol
+# Damned, Moon
 
 **A Werewolf Choose-Your-Own-Adventure RPG — built entirely in a single Excel spreadsheet.**
 
 ## Overview
 
-Blood Moon Protocol is an interactive fiction RPG where you play as **Marcus Daye** — an ex-Army medic and night-shift security guard in Detroit who wakes up in Elgin Park three days after being attacked by something inhuman. The entire game runs inside an `.xlsx` file using hyperlinked buttons to navigate between scenes.
+Damned, Moon is an interactive fiction RPG where you play as **Marcus Daye** — an ex-Army medic and night-shift security guard in Detroit who wakes up in Elgin Park three days after being attacked by something inhuman. The entire game runs inside an `.xlsx` file using hyperlinked buttons to navigate between scenes.
 
 ## How to Play
 

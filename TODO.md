@@ -1,4 +1,4 @@
-# Blood Moon Protocol — Implementation TODO
+# Damned, Moon — Implementation TODO
 
 ## Phase 1: Core Engine
 - [x] **Scene Database System** — `SceneDB` sheet + `modData` VBA module with scene lookup (SceneID, story text, choices, next scene links, conditions, on-enter effects)
