@@ -70,7 +70,7 @@ Public Sub SetStat(statName As String, val As Variant)
 End Sub
 
 ' Add a delta to a numeric stat (clamped for core stats)
-Public Sub AddStat(statName As String, delta As Double)
+Public Sub AddStat(ByVal statName As String, ByVal delta As Double)
     Dim current As Long
     current = GetStat(statName)
     current = current + CLng(delta)
